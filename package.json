@@ -1,0 +1,19 @@
+{
+  "name": "tilehub-pro",
+  "version": "1.0.0",
+  "description": "TileHub Pro — Tile Retail ERP Platform",
+  "private": true,
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "db:schema": "psql -U postgres -d tilehub -f database/schema.sql",
+    "db:seed": "psql -U postgres -d tilehub -f database/seed.sql",
+    "db:reset": "npm run db:schema && npm run db:seed",
+    "build:frontend": "cd frontend && npm run build",
+    "start:backend": "cd backend && node server.js"
+  },
+  "dependencies": {
+    "flutter": "^0.0.5"
+  }
+}

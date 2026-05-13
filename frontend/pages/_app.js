@@ -1,0 +1,12 @@
+import '../styles/globals.css';
+import { AuthProvider } from '../lib/auth';
+import Layout from '../components/Layout';
+
+export default function App({ Component, pageProps }) {
+  const getLayout = Component.getLayout || ((page) => <Layout>{page}</Layout>);
+  return (
+    <AuthProvider>
+      {getLayout(<Component {...pageProps} />)}
+    </AuthProvider>
+  );
+}
