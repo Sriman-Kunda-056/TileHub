@@ -1,19 +1,46 @@
 {
-  "name": "tilehub-pro",
+  "name": "TileHubPro",
   "version": "1.0.0",
-  "description": "TileHub Pro — Tile Retail ERP Platform",
   "private": true,
   "scripts": {
-    "install:all": "cd backend && npm install && cd ../frontend && npm install",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
-    "db:schema": "psql -U postgres -d tilehub -f database/schema.sql",
-    "db:seed": "psql -U postgres -d tilehub -f database/seed.sql",
-    "db:reset": "npm run db:schema && npm run db:seed",
-    "build:frontend": "cd frontend && npm run build",
-    "start:backend": "cd backend && node server.js"
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "build:android": "cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
-    "flutter": "^0.0.5"
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/datetimepicker": "8.0.1",
+    "@react-navigation/bottom-tabs": "6.5.20",
+    "@react-navigation/drawer": "6.6.15",
+    "@react-navigation/native": "6.1.17",
+    "@react-navigation/native-stack": "6.9.26",
+    "axios": "1.6.8",
+    "date-fns": "3.3.1",
+    "react": "18.2.0",
+    "react-native": "0.73.4",
+    "react-native-document-picker": "9.1.1",
+    "react-native-gesture-handler": "2.15.0",
+    "react-native-linear-gradient": "2.8.3",
+    "react-native-modal": "13.0.1",
+    "react-native-paper": "5.12.3",
+    "react-native-qrcode-svg": "6.3.0",
+    "react-native-reanimated": "3.7.2",
+    "react-native-safe-area-context": "4.9.0",
+    "react-native-screens": "3.29.0",
+    "react-native-svg": "15.6.0",
+    "react-native-toast-message": "2.2.0",
+    "react-native-vector-icons": "10.0.3",
+    "react-native-vision-camera": "3.9.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/runtime": "^7.20.0",
+    "@react-native/babel-preset": "0.73.21",
+    "@react-native/eslint-config": "0.73.2",
+    "@react-native/metro-config": "0.73.3",
+    "@react-native/typescript-config": "0.73.1",
+    "typescript": "5.0.4"
   }
 }

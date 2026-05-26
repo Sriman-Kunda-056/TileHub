@@ -1,0 +1,2 @@
+import React from 'react'; import { View, Text } from 'react-native'; import { Colors } from '../../theme';
+export default function AnalyticsScreen() { return <View style={{ flex:1, justifyContent:'center', alignItems:'center', backgroundColor:Colors.gray50 }}><Text style={{ fontSize:32 }}>📊</Text><Text style={{ fontSize:18, fontWeight:'700', marginTop:12, color:Colors.gray900 }}>Analytics</Text><Text style={{ color:Colors.gray400, marginTop:6 }}>Coming soon</Text></View>; }
