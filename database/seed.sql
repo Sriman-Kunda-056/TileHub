@@ -4,12 +4,12 @@
 -- ─── ADMIN USER ──────────────────────────────────────────────────────────────
 -- Password: Admin@1234 (bcrypt hash)
 INSERT INTO users (id, name, email, phone, password_hash, role) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'Admin User',      'admin@tilehub.com',     '+919876543210', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMaBno3YHsN1KnSf4K1TGfPFSm', 'admin'),
-  ('00000000-0000-0000-0000-000000000002', 'Sales Manager',   'sales@tilehub.com',     '+919876543211', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMaBno3YHsN1KnSf4K1TGfPFSm', 'sales'),
-  ('00000000-0000-0000-0000-000000000003', 'Warehouse Staff', 'warehouse@tilehub.com', '+919876543212', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMaBno3YHsN1KnSf4K1TGfPFSm', 'warehouse'),
-  ('00000000-0000-0000-0000-000000000004', 'Accountant',      'accounts@tilehub.com',  '+919876543213', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMaBno3YHsN1KnSf4K1TGfPFSm', 'accountant'),
-  ('00000000-0000-0000-0000-000000000005', 'Rahul Sharma',    'rahul@gmail.com',        '+919876500001', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMaBno3YHsN1KnSf4K1TGfPFSm', 'customer'),
-  ('00000000-0000-0000-0000-000000000006', 'Priya Builders',  'priya@pbuild.com',       '+919876500002', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMaBno3YHsN1KnSf4K1TGfPFSm', 'customer')
+  ('00000000-0000-0000-0000-000000000001', 'Admin User',      'admin@tilehub.com',     '+919876543210', '$2a$12$IDsl0CFPDbieOu0SfZBup.bLmU2TlD.Hsxd6Ks7aXBntNB5HQceSy', 'admin'),
+  ('00000000-0000-0000-0000-000000000002', 'Sales Manager',   'sales@tilehub.com',     '+919876543211', '$2a$12$IDsl0CFPDbieOu0SfZBup.bLmU2TlD.Hsxd6Ks7aXBntNB5HQceSy', 'sales'),
+  ('00000000-0000-0000-0000-000000000003', 'Warehouse Staff', 'warehouse@tilehub.com', '+919876543212', '$2a$12$IDsl0CFPDbieOu0SfZBup.bLmU2TlD.Hsxd6Ks7aXBntNB5HQceSy', 'warehouse'),
+  ('00000000-0000-0000-0000-000000000004', 'Accountant',      'accounts@tilehub.com',  '+919876543213', '$2a$12$IDsl0CFPDbieOu0SfZBup.bLmU2TlD.Hsxd6Ks7aXBntNB5HQceSy', 'accountant'),
+  ('00000000-0000-0000-0000-000000000005', 'Rahul Sharma',    'rahul@gmail.com',        '+919876500001', '$2a$12$IDsl0CFPDbieOu0SfZBup.bLmU2TlD.Hsxd6Ks7aXBntNB5HQceSy', 'customer'),
+  ('00000000-0000-0000-0000-000000000006', 'Priya Builders',  'priya@pbuild.com',       '+919876500002', '$2a$12$IDsl0CFPDbieOu0SfZBup.bLmU2TlD.Hsxd6Ks7aXBntNB5HQceSy', 'customer')
 ON CONFLICT DO NOTHING;
 
 -- ─── CUSTOMERS ───────────────────────────────────────────────────────────────
