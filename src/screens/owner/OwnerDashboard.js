@@ -42,8 +42,8 @@ export default function OwnerDashboard({ navigation }) {
       ]);
       setData(dash.data);
       setAlerts(inv.data);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // dashboard data unavailable — silently skip
     } finally {
       setLoading(false);
       setRefreshing(false);
