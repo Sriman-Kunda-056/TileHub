@@ -76,7 +76,7 @@ const createInvoice = asyncHandler(async (req, res) => {
   const dueDate = new Date(Date.now() + due_days * 24 * 60 * 60 * 1000);
 
   // Split GST: CGST + SGST for same-state, IGST for interstate
-  const subtotal = ord.subtotal;
+  const subtotal = parseFloat(ord.subtotal);
   const cgst = Math.round(subtotal * (GST_RATE / 2) * 100) / 100;
   const sgst = Math.round(subtotal * (GST_RATE / 2) * 100) / 100;
   const total = subtotal + cgst + sgst;
