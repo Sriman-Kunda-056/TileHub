@@ -21,17 +21,44 @@ export default function CreateBillScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
+  const [loadError, setLoadError] = useState('');
+  const [submitStage, setSubmitStage] = useState('');
+
+  const getErrorMessage = (err, fallback) => {
+    if (err.code === 'ECONNABORTED') {
+      return 'The server took too long to respond. It may still be starting; please wait a moment and try again.';
+    }
+    if (!err.response) return 'Could not reach TileHub. Check your internet connection and try again.';
+    if (err.response.status === 401) return 'Your session expired. Return to sign in and try again.';
+    if (err.response.status === 403) return 'This account does not have permission to create bills.';
+    return err.response?.data?.error || fallback;
+  };
+
+  const loadFormData = async () => {
+    setLoading(true);
+    setLoadError('');
+    try {
+      const [productResponse, customerResponse] = await Promise.all([
+        productService.getAll({ limit: 100 }),
+        customerService.getAll(),
+      ]);
+      setProducts(Array.isArray(productResponse.data?.products) ? productResponse.data.products : []);
+      setCustomers(Array.isArray(customerResponse.data) ? customerResponse.data : []);
+    } catch (err) {
+      setLoadError(getErrorMessage(err, 'Could not load customers and products.'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setLoading(true);
-    Promise.all([
-      productService.getAll({ limit: 100 }),
-      customerService.getAll(),
-    ]).then(([p, c]) => {
-      setProducts(p.data.products || []);
-      setCustomers(c.data || []);
-    }).finally(() => setLoading(false));
+    loadFormData();
   }, []);
+
+  useEffect(() => navigation.addListener('beforeRemove', event => {
+    if (!submitting) return;
+    event.preventDefault();
+  }), [navigation, submitting]);
 
   const filteredCustomers = customers.filter(c =>
     c.name?.toLowerCase().includes(customerSearch.toLowerCase()) ||
@@ -69,36 +96,59 @@ export default function CreateBillScreen({ navigation }) {
     if (!customer) { Alert.alert('Missing', 'Please select a customer'); return; }
     if (!validItems.length) { Alert.alert('Missing', 'Please add at least one product'); return; }
 
+    let createdOrder = null;
+    let createdShipment = null;
     setSubmitting(true);
+    setSubmitStage('order');
     try {
-      // 1. Create order
       const orderRes = await orderService.create({
         customer_id: customer.id,
         items: validItems.map(i => ({ product_id: i.product_id, quantity_boxes: i.quantity_boxes })),
         notes,
         delivery_address: deliveryAddress || customer.billing_address,
       });
+      createdOrder = orderRes.data;
 
-      // 2. Confirm order → auto-creates shipment + reserves stock
-      const confirmRes = await orderService.updateStatus(orderRes.data.id, 'confirmed');
+      setSubmitStage('confirmation');
+      const confirmRes = await orderService.updateStatus(createdOrder.id, 'confirmed');
+      createdShipment = confirmRes.data.shipment;
 
-      // 3. Create invoice
+      setSubmitStage('invoice');
       const invoiceRes = await billingService.createInvoice({
-        order_id: orderRes.data.id,
+        order_id: createdOrder.id,
         customer_id: customer.id,
         due_days: 30,
       });
 
       setResult({
-        order: orderRes.data,
-        shipment: confirmRes.data.shipment,
+        order: createdOrder,
+        shipment: createdShipment,
         invoice: invoiceRes.data,
       });
-      setStep(4); // success
+      setStep(4);
     } catch (err) {
-      Alert.alert('Error', err.response?.data?.error || 'Failed to create bill. Please try again.');
+      const reason = getErrorMessage(err, 'The bill could not be completed.');
+
+      if (createdOrder) {
+        const savedMessage = createdShipment
+          ? `Order ${createdOrder.order_number} and shipment ${createdShipment.shipment_number} were saved, but the invoice did not finish. Do not submit this bill again; check Orders and Billing.`
+          : `Order ${createdOrder.order_number} was saved as a draft, but stock and shipment confirmation did not finish. Do not submit it again; check Orders.`;
+
+        Alert.alert(
+          'Bill Not Completed',
+          `${reason}\n\n${savedMessage}`,
+          [{ text: 'View Orders', onPress: () => navigation.navigate('Main', { screen: 'Orders' }) }],
+          { cancelable: false }
+        );
+      } else {
+        const timeoutWarning = err.code === 'ECONNABORTED'
+          ? '\n\nThe server may have saved the order. Check Orders before trying again.'
+          : '';
+        Alert.alert('Could Not Create Bill', `${reason}${timeoutWarning}`);
+      }
     } finally {
       setSubmitting(false);
+      setSubmitStage('');
     }
   };
 
@@ -142,7 +192,7 @@ export default function CreateBillScreen({ navigation }) {
             <TouchableOpacity style={styles.primaryBtn} onPress={() => navigation.navigate('InvoiceDetail', { invoiceId: result.invoice?.id })}>
               <Text style={styles.primaryBtnText}>View Invoice & QR Code</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.secondaryBtn} onPress={() => { setStep(1); setCustomer(null); setItems([{ product_id: '', product: null, quantity_boxes: 1 }]); setResult(null); }}>
+            <TouchableOpacity style={styles.secondaryBtn} onPress={() => { setStep(1); setCustomer(null); setCustomerSearch(''); setItems([{ product_id: '', product: null, quantity_boxes: 1 }]); setNotes(''); setDeliveryAddress(''); setResult(null); }}>
               <Text style={styles.secondaryBtnText}>Create Another Bill</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.secondaryBtn} onPress={() => navigation.goBack()}>
@@ -154,11 +204,27 @@ export default function CreateBillScreen({ navigation }) {
     );
   }
 
+  if (loadError) {
+    return (
+      <View style={styles.loadErrorScreen}>
+        <Text style={styles.loadErrorIcon}>⚠️</Text>
+        <Text style={styles.loadErrorTitle}>Couldn’t load the bill form</Text>
+        <Text style={styles.loadErrorText}>{loadError}</Text>
+        <TouchableOpacity style={[styles.primaryBtn, { alignSelf: 'stretch' }]} onPress={loadFormData}>
+          <Text style={styles.primaryBtnText}>Try Again</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.secondaryBtn, { alignSelf: 'stretch' }]} onPress={() => navigation.goBack()}>
+          <Text style={styles.secondaryBtnText}>Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: Colors.gray50 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {/* Header */}
       <LinearGradient colors={[Colors.primary, Colors.primaryLight]} style={styles.header}>
-        <TouchableOpacity onPress={() => step > 1 ? setStep(s => s - 1) : navigation.goBack()}>
+        <TouchableOpacity disabled={submitting} style={submitting && { opacity: 0.5 }} onPress={() => step > 1 ? setStep(s => s - 1) : navigation.goBack()}>
           <Text style={styles.backText}>← {step > 1 ? 'Back' : 'Cancel'}</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Create Bill</Text>
@@ -354,7 +420,18 @@ export default function CreateBillScreen({ navigation }) {
         ) : (
           <TouchableOpacity style={[styles.primaryBtn, submitting && { opacity: 0.7 }]} onPress={handleSubmit} disabled={submitting}>
             {submitting
-              ? <ActivityIndicator color={Colors.white} />
+              ? (
+                <View style={styles.submittingRow}>
+                  <ActivityIndicator color={Colors.white} />
+                  <Text style={styles.submittingText}>
+                    {{
+                      order: 'Saving order…',
+                      confirmation: 'Reserving stock and creating shipment…',
+                      invoice: 'Creating invoice…',
+                    }[submitStage] || 'Saving bill…'}
+                  </Text>
+                </View>
+              )
               : <Text style={styles.primaryBtnText}>✓ Confirm &amp; Generate Bill</Text>
             }
           </TouchableOpacity>
@@ -365,6 +442,21 @@ export default function CreateBillScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  loadErrorScreen: {
+    flex: 1, justifyContent: 'center', alignItems: 'center',
+    backgroundColor: Colors.gray50, padding: 28,
+  },
+  loadErrorIcon: { fontSize: 48, marginBottom: 14 },
+  loadErrorTitle: {
+    color: Colors.gray900, fontSize: 20, fontWeight: '800',
+    marginBottom: 8, textAlign: 'center',
+  },
+  loadErrorText: {
+    color: Colors.gray600, fontSize: 14, lineHeight: 21,
+    marginBottom: 22, textAlign: 'center',
+  },
+  submittingRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  submittingText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
   header: { paddingTop: 56, paddingHorizontal: 20, paddingBottom: 24 },
   backText: { color: '#93C5FD', fontSize: 14, fontWeight: '500', marginBottom: 10 },
   headerTitle: { fontSize: 22, fontWeight: '800', color: Colors.white, marginBottom: 14 },

@@ -6,7 +6,8 @@ export const API_BASE = 'https://tilehub-api.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_BASE,
-  timeout: 15000,
+  // Render free instances can need about a minute to wake after being idle.
+  timeout: 75000,
   headers: { 'Content-Type': 'application/json' },
 });
 
