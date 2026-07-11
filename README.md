@@ -1,6 +1,6 @@
 # TileHub Pro — React Native Mobile App
 
-## Tech: React Native 0.73 + React Navigation + Vision Camera
+## Tech: React Native 0.73 + React Navigation + CameraKit
 
 ---
 
@@ -63,8 +63,8 @@ export const API_BASE = 'https://tilehub-api.onrender.com/api';
 
 ## Key Dependency Notes
 
-`react-native-vision-camera` requires:
-- Android: minSdkVersion 26 in `android/build.gradle`
+`react-native-camera-kit` requires:
+- Android: minSdkVersion 24 in `android/build.gradle`
 - iOS: Camera permission in `Info.plist`
 
 Add to `android/app/src/main/AndroidManifest.xml`:

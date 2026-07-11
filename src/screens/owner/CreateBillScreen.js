@@ -331,7 +331,7 @@ export default function CreateBillScreen({ navigation }) {
 
             <View style={[styles.card, { marginTop: 12, backgroundColor: Colors.primaryBg, borderWidth: 1, borderColor: Colors.primaryBorder }]}>
               <Text style={{ fontSize: 12, color: Colors.primaryDark, lineHeight: 18 }}>
-                ✅ Confirming will automatically:<br/>
+                ✅ Confirming will automatically:{'\n'}
                 • Create a GST invoice{'\n'}
                 • Generate a shipment with QR code{'\n'}
                 • Reserve stock for the items
