@@ -12,7 +12,7 @@ and QR-driven warehouse dispatch.
 
 [Configured web deployment](https://tile-hub.vercel.app)
 
-## At a glance
+## Evidence at a glance
 
 | Verified from the repository tree | Count |
 | --- | ---: |
@@ -22,7 +22,12 @@ and QR-driven warehouse dispatch.
 | Backend route modules | **11** |
 | Backend controllers | **6** |
 
-## Architecture preview
+## Preview
+
+No reviewed UI capture is embedded yet. The GitHub-rendered service diagram is
+used as the public preview until a synthetic-data screenshot is available.
+
+## Architecture
 
 ```mermaid
 flowchart LR
@@ -99,7 +104,7 @@ export const API_BASE = 'https://tilehub-api.onrender.com/api';
 
 ---
 
-## Features by Role
+## What it does
 
 ### Owner / Admin
 - Dashboard with KPIs (revenue, orders, alerts)
@@ -137,3 +142,58 @@ Add to `ios/TileHubPro/Info.plist`:
 <key>NSCameraUsageDescription</key>
 <string>TileHub Pro needs camera access to scan shipment QR codes</string>
 ```
+
+## Tests and validation
+
+No automated end-to-end or unit-test suite is tracked in the source-only
+repository. Before a release, validate with synthetic inventory and accounts:
+
+1. Start the API, web dashboard, and mobile client.
+2. Create a bill and confirm the resulting order and stock reservation.
+3. Generate and scan a shipment QR code.
+4. Confirm dispatch and delivery state transitions.
+5. Verify role boundaries and failed-network recovery on mobile.
+
+## Repository layout
+
+```text
+TileHub/
+|-- src/                  # React Native screens, navigation, and services
+|-- android/              # Android application project; no signing secrets
+|-- backend/              # Node API, routes, controllers, and database access
+|-- frontend/             # Next.js web dashboard
+|-- database/             # Database support files
+|-- App.js                # React Native root
+|-- package.json          # Mobile scripts and dependencies
+`-- render.yaml           # API deployment configuration
+```
+
+## Limitations
+
+- The three application surfaces do not have a tracked automated integration
+  suite.
+- Demo authentication and client-side session storage require a production
+  security review.
+- Billing, payments, inventory reconciliation, and warehouse dispatch require
+  transactional and audit controls before real operational use.
+- Camera permissions and device networking differ between emulators and physical
+  devices.
+- JWT, PostgreSQL, Cloudinary, Twilio, and signing credentials must remain out of
+  Git and be rotated if exposed.
+
+## Numbered commit history
+
+1. `Initial` - import the mobile, web, and API implementation.
+2. `01` - remove generated dependencies and signing artifacts, then document the platform.
+3. `02` - standardize the evidence-first GitHub README format.
+
+## Suggested GitHub topics
+
+`react-native` `nextjs` `nodejs` `postgresql` `inventory-management`
+`billing` `warehouse-management` `qr-code` `tailwindcss`
+
+## License and attribution
+
+No repository-wide license file is included. React Native, Next.js, PostgreSQL,
+Cloudinary, Twilio, and other dependencies remain subject to their respective
+licenses and service terms.
