@@ -29,7 +29,7 @@ android/build/
 android/local.properties
 android/app/src/main/assets/index.android.bundle
 *.keystore
-!android/app/debug.keystore
+*.jks
 
 # React Native / iOS build output
 ios/build/

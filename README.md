@@ -1,24 +1,84 @@
-# TileHub Pro — React Native Mobile App
+# TileHub Pro — Full-Stack Tile Operations Platform
 
-## Tech: React Native 0.73 + React Navigation + CameraKit
+TileHub combines a React Native field app, a Next.js web dashboard, and a
+Node/PostgreSQL API for tile inventory, billing, orders, customers, analytics,
+and QR-driven warehouse dispatch.
 
----
+![Surfaces](https://img.shields.io/badge/application_surfaces-3-2563eb)
+![Mobile screens](https://img.shields.io/badge/mobile_screens-18-7c3aed)
+![Web routes](https://img.shields.io/badge/web_routes-17-0ea5e9)
+![API modules](https://img.shields.io/badge/API_route_modules-11-2ea44f)
+![React Native](https://img.shields.io/badge/React_Native-0.73.4-61dafb)
 
-## Setup
+[Configured web deployment](https://tile-hub.vercel.app)
+
+## At a glance
+
+| Verified from the repository tree | Count |
+| --- | ---: |
+| Application surfaces: mobile, web, API | **3** |
+| React Native screens | **18** |
+| Web route pages | **17** |
+| Backend route modules | **11** |
+| Backend controllers | **6** |
+
+## Architecture preview
+
+```mermaid
+flowchart LR
+    M["React Native mobile<br/>owner + warehouse workflows"]
+    W["Next.js web dashboard"]
+    API["Node API<br/>11 route modules"]
+    DB[("PostgreSQL")]
+    CL["Cloudinary"]
+    TW["Twilio"]
+
+    M --> API
+    W --> API
+    API --> DB
+    API --> CL
+    API --> TW
+```
+
+> **Repository status:** generated dependency folders and the React Native debug
+> keystore are excluded from the current source tree. Production signing keys
+> and environment secrets must never be committed.
+
+## Quick start
+
+### Mobile app
 
 ```bash
-cd tilehub-mobile
+git clone https://github.com/Sriman-Kunda-056/TileHub.git
+cd TileHub
 npm install
+npm start
 
-# iOS (Mac only)
-cd ios && pod install && cd ..
-
-# Android
-npx react-native run-android
-
-# iOS
-npx react-native run-ios
+# In another terminal
+npm run android
 ```
+
+For iOS on macOS, install Pods in `ios/` and run `npm run ios`.
+
+### Backend API
+
+```bash
+cd backend
+npm install
+node server.js
+```
+
+### Web dashboard
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Each surface has its own environment configuration. Use example files when
+present and keep JWT, Cloudinary, Twilio, database, and deployment credentials
+out of Git.
 
 ---
 
